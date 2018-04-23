@@ -1,6 +1,6 @@
 # Sequence-to-Sequence (seq2seq) model
 
-## Usage
+## [Usage](#)
 
 ### install openCV (defaul in python3.6, on macOS)
 - install opencv and its dependent packages through Homebrew
@@ -16,15 +16,11 @@ echo /usr/local/opt/opencv/lib/python3.6/site-packages >> /usr/local/lib/python3
 
 ```
 
-## Task
 
-- Video Caption Generation
-- ChatBot
+## [Video Caption Generation (pdf)](./doc/HW2-1.pdf)
 
-## [Video Caption Generation](./doc/HW2-1.pdf)
+## [ChatBot (pdf)](./doc/HW2-2.pdf)
 
-## [ChatBot](./doc/HW2-2.pdf)
-
-## Reference
+## [Reference](#)
 
 - install OpenCV on macOS ([link](https://www.learnopencv.com/install-opencv3-on-macos/))
