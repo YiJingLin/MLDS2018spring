@@ -2,18 +2,10 @@
 
 ## [Usage](#)
 
-### install openCV (defaul in python3.6, on macOS)
-- install opencv and its dependent packages through Homebrew
+### 1. install packages
 ```
-
-brew install imagemagick tesseract opencv
-
-```
-- update path of site-packages directory which contains cv2.so file to Homebrew Python’s site-packages directory
-```
-
-echo /usr/local/opt/opencv/lib/python3.6/site-packages >> /usr/local/lib/python3.6/site-packages/opencv3.pth
-
+pip install --upgrade pip numpy pandas matpotlib torch
+conda install opencv
 ```
 
 
