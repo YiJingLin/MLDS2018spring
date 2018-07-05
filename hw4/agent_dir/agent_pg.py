@@ -2,7 +2,7 @@ from agent_dir.agent import Agent
 import scipy
 import numpy as np
 import pickle
-import gym
+import gym, os
 
 
 import torch
@@ -73,8 +73,13 @@ class Agent_PG(Agent):
         if args.test_pg:
             #you can load your model here
             print('loading trained model')
-            with open(args.load_path, 'rb') as file:
+            with open(os.path.join(args.load_weight_path, weight_file_name), 'rb') as file:
                 self.policy.load_stats_dict(pickle.load(file)) 
+        elif args.train_pg:
+            if not os.path.exists(args.weight_path):
+                os.makedirs(args.weight_path)
+            if not os.path.exists(args.history_path):
+                os.makedirs(args.history_path)
 
         self.init_game_setting()
 
@@ -104,7 +109,7 @@ class Agent_PG(Agent):
             n_episode = self.args.n_episode
 
 
-        for i_episode in range(n_episode):
+        for i_episode in range(n_episode+1):
             obs = self.env.reset()
             for t in range(self.args.n_step):
                 obs = prepro(obs)
@@ -142,23 +147,30 @@ class Agent_PG(Agent):
             #     print('ep %d: model saving...' % (i_episode))
             #     torch.save(policy.state_dict(), 'pg_params.pkl')
 
-        with open(self.args.save_path,'wb') as file:
-            pickle.dump(history, file)
-
+            if (i_episode) % 100 == 0 :
+                with open(os.path.join(self.args.history_path, self.args.history_name),'wb') as file:
+                    pickle.dump(history, file)
+                torch.save(self.policy.state_dict(), os.path.join(self.args.weight_path, self.args.model_name))
+                print('save history and model ...')
 
     def finish_episode(self):
         R = 0
         policy_loss = []
         rewards = []
-        for r in self.policy.rewards[::-1]:
-            R = r + self.args.gamma * R
-            rewards.insert(0, R)
-        # turn rewards to pytorch tensor and standardize
-        rewards = torch.Tensor(rewards)
-        rewards = (rewards - rewards.mean()) / (rewards.std() + 10e-8) #np.finfo(np.float32).eps)
-        
+
+        if self.args.variance_reduction :
+            for r in self.policy.rewards[::-1]:
+                R = r + self.args.gamma * R
+                rewards.insert(0, R)
+            # turn rewards to pytorch tensor and standardize
+            rewards = torch.Tensor(rewards)
+            rewards = (rewards - rewards.mean()) / (rewards.std() + 10e-8) #np.finfo(np.float32).eps)
+        else:
+            rewards = self.policy.rewards
+
         for log_prob, reward in zip(self.policy.saved_log_probs, rewards):
             policy_loss.append(-log_prob * reward)
+
 
         # 清理optimizer的gradient是PyTorch制式動作，去他們官網學習一下即可
         self.optimizer.zero_grad()

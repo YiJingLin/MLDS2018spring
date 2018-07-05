@@ -9,11 +9,15 @@ def add_arguments(parser):
     '''
     
     ### common arguments
-    parser.add_argument('--load_path', type=str, default='./weight/', 
-                    help='load pre-trained model path')
-    parser.add_argument('--save_path', type=str, default='./weight/', 
-                    help='save pre-trained model path')
-    parser.add_argument('--n_episode', type=int, default=3000, 
+    parser.add_argument('--weight_path', type=str, default='./weight/', 
+                    help='pre-trained model\'s weight path')
+    parser.add_argument('--history_path', type=str, default='./log/', 
+                    help='save learning record path')
+    parser.add_argument('--model_name', type=str, default='policy_weights.pkl', 
+                    help='model weights name')
+    parser.add_argument('--history_name', type=str, default='hisotry.pkl', 
+                    help='learning history name')
+    parser.add_argument('--n_episode', type=int, default=2000, 
                     help='number of episodes')
     parser.add_argument('--n_step', type=int, default=10000, 
                     help='number of step in each episode')
