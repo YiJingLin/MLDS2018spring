@@ -15,7 +15,7 @@ def add_arguments(parser):
                     help='save learning record path')
     parser.add_argument('--model_name', type=str, default='policy_weights.pkl', 
                     help='model weights name')
-    parser.add_argument('--history_name', type=str, default='hisotry.pkl', 
+    parser.add_argument('--history_name', type=str, default='history.pkl', 
                     help='learning history name')
     parser.add_argument('--n_episode', type=int, default=2000, 
                     help='number of episodes')

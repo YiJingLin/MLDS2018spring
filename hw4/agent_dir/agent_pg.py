@@ -73,8 +73,8 @@ class Agent_PG(Agent):
         if args.test_pg:
             #you can load your model here
             print('loading trained model')
-            with open(os.path.join(args.load_weight_path, weight_file_name), 'rb') as file:
-                self.policy.load_stats_dict(pickle.load(file)) 
+            with open(os.path.join(args.weight_path, args.model_name), 'rb') as file:
+                self.policy.load_state_dict(pickle.load(file)) 
         elif args.train_pg:
             if not os.path.exists(args.weight_path):
                 os.makedirs(args.weight_path)
@@ -112,11 +112,9 @@ class Agent_PG(Agent):
         for i_episode in range(n_episode+1):
             obs = self.env.reset()
             for t in range(self.args.n_step):
-                obs = prepro(obs)
                 action = self.make_action(obs)
                 # output : 0, 1, 2
                 # gym : action 1 = hold, action 2 = up, action 3 = down
-                action = action + 1
                 obs, reward, done, _ = self.env.step(action)
                 self.reward_sum += reward
                 
@@ -150,7 +148,8 @@ class Agent_PG(Agent):
             if (i_episode) % 100 == 0 :
                 with open(os.path.join(self.args.history_path, self.args.history_name),'wb') as file:
                     pickle.dump(history, file)
-                torch.save(self.policy.state_dict(), os.path.join(self.args.weight_path, self.args.model_name))
+                with open(os.path.join(self.args.weight_path, self.args.model_name), 'wb') as file:
+                    pickle.dump(self.policy.state_dict(), file)
                 print('save history and model ...')
 
     def finish_episode(self):
@@ -196,10 +195,12 @@ class Agent_PG(Agent):
                 the predicted action from trained model
         """
         # print(observation.shape)
+        observation = prepro(observation)
         observation = torch.from_numpy(observation).float().unsqueeze(0)
         probs = self.policy(Variable(observation))
         m = Categorical(probs)
         action = m.sample() # 從multinomial分佈中抽樣
         self.policy.saved_log_probs.append(m.log_prob(action)) # 蒐集log action以利於backward
-        return action.data[0]
+        action = action.data[0] + 1
+        return int(action)
 
